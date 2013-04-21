@@ -3,6 +3,7 @@
 
 %global gemdir %(ruby -rubygems -e 'puts Gem::dir' 2>/dev/null)
 %global geminstdir %{gemdir}/gems/%{gemname}-%{version}
+%global rubyabi 2.0
 
 Summary: Simple, transparent coffeescript integration for Rails and Rack applications
 Name: rubygem-%{gemname}
@@ -13,9 +14,11 @@ License: MIT
 URL: http://github.com/Sutto/barista
 Source0: %{gemname}-%{version}.gem
 Source1: spec.tar.gz
+Requires: ruby(abi) = %{rubyabi}
 Requires: ruby(rubygems) 
 Requires: rubygem(coffee-script) => 2.2
 Requires: rubygem(coffee-script) < 3
+BuildRequires: ruby(abi) = %{rubyabi}
 BuildRequires: ruby(rubygems) 
 BuildRequires: ruby
 BuildRequires: rubygem-rspec
