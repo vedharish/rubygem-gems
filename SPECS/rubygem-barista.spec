@@ -62,6 +62,7 @@ cp -pa .%{gem_dir}/* \
 
 %check
 git clone https://github.com/vedharish/barista-spec.git && cd barista-spec
+git checkout v1.0
 tar -xvf spec.tar.gz
 cp -pr spec/ %{buildroot}%{gem_instdir}
 pushd %{buildroot}%{gem_instdir}
