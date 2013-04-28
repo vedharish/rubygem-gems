@@ -1,29 +1,24 @@
 # Generated from barista-1.3.0.gem by gem2rpm -*- rpm-spec -*-
-%global gemname barista
+%global gem_name barista
 
-%global gemdir %(ruby -rubygems -e 'puts Gem::dir' 2>/dev/null)
-%global geminstdir %{gemdir}/gems/%{gemname}-%{version}
-%global rubyabi 2.0
-
-Summary: Simple, transparent coffeescript integration for Rails and Rack applications
-Name: rubygem-%{gemname}
+Name: rubygem-%{gem_name}
 Version: 1.3.0
 Release: 1%{?dist}
+Summary: Simple, transparent coffeescript integration for Rails and Rack applications
 Group: Development/Languages
 License: MIT
 URL: http://github.com/Sutto/barista
-Source0: %{gemname}-%{version}.gem
-Source1: spec.tar.gz
-Requires: ruby(abi) = %{rubyabi}
+Source0: https://rubygems.org/gems/%{gem_name}-%{version}.gem
+Requires: ruby(release)
 Requires: ruby(rubygems) 
 Requires: rubygem(coffee-script) => 2.2
 Requires: rubygem(coffee-script) < 3
-BuildRequires: ruby(abi) = %{rubyabi}
-BuildRequires: ruby(rubygems) 
-BuildRequires: ruby
+BuildRequires: ruby(release)
+BuildRequires: rubygems-devel 
+BuildRequires: ruby 
 BuildRequires: rubygem-rspec
 BuildArch: noarch
-Provides: rubygem(%{gemname}) = %{version}
+Provides: rubygem(%{gem_name}) = %{version}
 
 %description
 Barista provides simple, integrated support for CoffeeScript in Rack and Rails
@@ -45,50 +40,56 @@ BuildArch: noarch
 %description doc
 Documentation for %{name}
 
-
 %prep
-%setup -q -c -T
-mkdir -p .%{gemdir}
-gem install --local --install-dir .%{gemdir} \
-            --force %{SOURCE0}
-tar -xzf %{SOURCE1}
+gem unpack %{SOURCE0}
+
+%setup -q -D -T -n  %{gem_name}-%{version}
+
+gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
 
 %build
+# Create the gem as gem install only works on a gem file
+gem build %{gem_name}.gemspec
+
+# %%gem_install compiles any C extensions and installs the gem into ./%gem_dir
+# by default, so that we can move it into the buildroot in %%install
+%gem_install
 
 %install
-mkdir -p %{buildroot}%{gemdir}
-cp -pa .%{gemdir}/* \
-        %{buildroot}%{gemdir}/
+mkdir -p %{buildroot}%{gem_dir}
+cp -pa .%{gem_dir}/* \
+        %{buildroot}%{gem_dir}/
 
 %check
-cp -pr spec/ ./%{geminstdir}
-pushd ./%{geminstdir}
+git clone https://github.com/vedharish/barista-spec.git && cd barista-spec
+tar -xvf spec.tar.gz
+cp -pr spec/ %{buildroot}%{gem_instdir}
+pushd %{buildroot}%{gem_instdir}
 rspec -Ilib spec
 rm -rf spec
 popd
 
+
 %files
-%dir %{geminstdir}
-%{geminstdir}/lib
-%exclude %{gemdir}/cache/%{gemname}-%{version}.gem
-%{gemdir}/specifications/%{gemname}-%{version}.gemspec
-%{geminstdir}/.document
-%{geminstdir}/.rspec
-%{geminstdir}/.rvmrc.example
-%{geminstdir}/DESCRIPTION
-%{geminstdir}/Gemfile
-%{geminstdir}/Gemfile.lock
-%{geminstdir}/Rakefile
-%{geminstdir}/barista.gemspec
-%{geminstdir}/rubygem-barista.spec.template
-%{geminstdir}/spec.tar.gz
+%dir %{gem_instdir}
+%{gem_libdir}
+%exclude %{gem_cache}
+%{gem_spec}
+%{gem_instdir}/.document
+%{gem_instdir}/.rspec
+%{gem_instdir}/.rvmrc.example
+%{gem_instdir}/DESCRIPTION
+%{gem_instdir}/Gemfile
+%{gem_instdir}/Gemfile.lock
+%{gem_instdir}/Rakefile
+%{gem_instdir}/barista.gemspec
+
 
 %files doc
-%doc %{gemdir}/doc/%{gemname}-%{version}
-%doc %{geminstdir}/LICENSE
-%doc %{geminstdir}/README.md
-
+%doc %{gem_docdir}
+%doc %{gem_instdir}/LICENSE
+%doc %{gem_instdir}/README.md
 
 %changelog
-* Sat Apr 20 2013 Harish Ved - 1.3.0-1
+* Sun Apr 28 2013 Harish Ved - 1.3.0-1
 - Initial package
