@@ -9,14 +9,21 @@ Group: Development/Languages
 License: MIT
 URL: http://github.com/Sutto/barista
 Source0: https://rubygems.org/gems/%{gem_name}-%{version}.gem
+Source1: %{name}-%{version}-specs.tgz
 Requires: ruby(release)
 Requires: ruby(rubygems) 
 Requires: rubygem(coffee-script) => 2.2
 Requires: rubygem(coffee-script) < 3
 BuildRequires: ruby(release)
-BuildRequires: rubygems-devel 
-BuildRequires: ruby 
-BuildRequires: rubygem-rspec
+BuildRequires: rubygems-devel
+BuildRequires: ruby
+BuildRequires: rubygem(coffee-script) => 2.2
+BuildRequires: rubygem(coffee-script) < 3
+BuildRequires: rubygem(minitest)
+BuildRequires: rubygem(rspec-rails)
+BuildRequires: rubygem(railties)
+BuildRequires: rubygem(polyglot)
+BuildRequires: rubygem(actionmailer)
 BuildArch: noarch
 Provides: rubygem(%{gem_name}) = %{version}
 
@@ -45,6 +52,8 @@ gem unpack %{SOURCE0}
 
 %setup -q -D -T -n  %{gem_name}-%{version}
 
+tar -xzf %{SOURCE1}
+
 gem spec %{SOURCE0} -l --ruby > %{gem_name}.gemspec
 
 %build
@@ -61,36 +70,30 @@ cp -pa .%{gem_dir}/* \
         %{buildroot}%{gem_dir}/
 
 %check
-git clone https://github.com/vedharish/barista-spec.git && cd barista-spec
-git checkout v1.0
-tar -xvf spec.tar.gz
-cp -pr spec/ %{buildroot}%{gem_instdir}
-pushd %{buildroot}%{gem_instdir}
+cp -pr spec/ ./%{gem_instdir}
+pushd ./%{gem_instdir}
 rspec -Ilib spec
 rm -rf spec
 popd
-
 
 %files
 %dir %{gem_instdir}
 %{gem_libdir}
 %exclude %{gem_cache}
+%exclude %{gem_instdir}/.*
 %{gem_spec}
-%{gem_instdir}/.document
-%{gem_instdir}/.rspec
-%{gem_instdir}/.rvmrc.example
-%{gem_instdir}/DESCRIPTION
-%{gem_instdir}/Gemfile
-%{gem_instdir}/Gemfile.lock
-%{gem_instdir}/Rakefile
-%{gem_instdir}/barista.gemspec
-
+%{gem_instdir}/rubygem-barista-1.3.0-specs.tgz
 
 %files doc
 %doc %{gem_docdir}
 %doc %{gem_instdir}/LICENSE
 %doc %{gem_instdir}/README.md
+%doc %{gem_instdir}/DESCRIPTION
+%doc %{gem_instdir}/Gemfile
+%doc %{gem_instdir}/Gemfile.lock
+%doc %{gem_instdir}/Rakefile
+%doc %{gem_instdir}/barista.gemspec
 
 %changelog
-* Sun Apr 28 2013 Harish Ved - 1.3.0-1
+* Wed Jun 26 2013 Harish Ved <something@localhost.localdomain> - 1.3.0-1
 - Initial package
