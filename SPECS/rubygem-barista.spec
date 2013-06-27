@@ -24,7 +24,9 @@ BuildRequires: rubygem(rspec-rails)
 BuildRequires: rubygem(railties)
 BuildRequires: rubygem(polyglot)
 BuildRequires: rubygem(actionmailer)
+BuildRequires: rubygem(activeresource)
 BuildRequires: rubygem-rspec
+BuildRequires: nodejs
 BuildArch: noarch
 Provides: rubygem(%{gem_name}) = %{version}
 
